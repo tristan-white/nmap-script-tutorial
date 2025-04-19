@@ -1,4 +1,4 @@
-# What can nmap scripts do?
+## What can nmap scripts do?
 
 The Nmap Scripting Engine (NSE) allows you to write lua scripts that extend the functionality of nmap. It was designed with the following tasks in mind:
 
@@ -8,7 +8,7 @@ The Nmap Scripting Engine (NSE) allows you to write lua scripts that extend the 
 - Backdoor detection
 - Vulnerability exploitation
 
-# Hello World
+## Hello World
 
 A simple "hello world" nmap script could look like this...
 
@@ -44,6 +44,8 @@ PORT     STATE SERVICE
 Nmap done: 1 IP address (1 host up) scanned in 0.04 seconds
 ```
 
+<br>
+
 # Script Format
 
 At the top of your lua scirpt, define these fields:
@@ -52,3 +54,40 @@ At the top of your lua scirpt, define these fields:
 - `author`: Your name.
 - `license`: The license under which the script is released. (e.g. "MIT")
 - `categories`: A list of categories that the script belongs to. This is used for organizing scripts in the nmap script database. (e.g. {"discovery", "vuln"})
+
+## Rules and Actions
+
+
+A rule is a Lua function that returns either true or false. 
+
+Rules determine whether a script should be run against a target. 
+
+Scripts can have one or more (up to four) rules. Each rule is evaluated at different phases of the nmap run.
+
+`hostrule` and `portrule` take args that are lua [tables](https://www.lua.org/pil/2.5.html) which contain information on the target against which the script is executed.
+
+### prerule()
+
+Called before any any hosts are scanned, during the pre-scanning phase.
+
+### hostrule(host)
+
+Called during Nmap's normal scanning process after Nmap has performed host discovery, port scanning, version detection, and OS detection against the target host.
+
+For each host that is up, nmap calls `hostrule`, passing it info about the host in the `host` table. The `hostrule` function can then check properties of the host to determine if it should trigger the `action`. For example, it might check to see if `host.ip` is a certain value, then return `true` to trigger the action. In lua, this would look like this:
+
+```lua
+hostrule = function(host)
+    if host.ip == "192.168.1.1" then
+        return true
+    end
+    return false
+end
+```
+
+### portrule(host, port)
+
+
+
+
+### postrule()
