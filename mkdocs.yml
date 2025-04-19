@@ -16,6 +16,7 @@ plugins:
   - termynal:
   - search
 markdown_extensions:
+  - admonition
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -23,6 +24,18 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.details
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
+extra:
+  analytics:
+    provider: google
+    property: G-T9WQVFX98N 
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/tristan-white
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/tr15t4n/
+    - icon: fontawesome/solid/circle-info
+      link: https://tristanwhite.me

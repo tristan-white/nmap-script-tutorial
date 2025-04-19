@@ -1,6 +1,6 @@
 ## What can nmap scripts do?
 
-The Nmap Scripting Engine (NSE) allows you to write lua scripts that extend the functionality of nmap. It was designed with the following tasks in mind:
+The Nmap Scripting Engine (NSE) allows you to write lua scripts that extend the functionality of nmap. It was designed to help enable users to do custome tasks dealing with:
 
 - Network discovery
 - More sophisticated version detection
@@ -13,11 +13,6 @@ The Nmap Scripting Engine (NSE) allows you to write lua scripts that extend the 
 A simple "hello world" nmap script could look like this...
 
 ```lua
-description = "A simple Hello World script for Nmap."
-author = "Your Name"
-license = "MIT"
-catgories = {"some_category_name"}
-
 prerule = function()
   return true
 end
@@ -48,15 +43,24 @@ Nmap done: 1 IP address (1 host up) scanned in 0.04 seconds
 
 # Script Format
 
-At the top of your lua scirpt, define these fields:
+At the top of your script, you may optionally define these fields:
 
-- `description`: A short description of what the script does.
+- `description`: A short description of what the script does. This is shown in the 
 - `author`: Your name.
 - `license`: The license under which the script is released. (e.g. "MIT")
 - `categories`: A list of categories that the script belongs to. This is used for organizing scripts in the nmap script database. (e.g. {"discovery", "vuln"})
 
-## Rules and Actions
+## The Action
 
+The action is a lua function named `action` defined by your script that gets triggered if any rule evaluates to true.
+
+It takes two arguments: `host` and `port`. The `host` argument is a table that contains information about the target hosts, and the `port` argument is a table that contains information about the target ports.
+
+!!! tip "Lua Tables"
+
+    If you're coming from python, you can sort of think of lua tables as dictionaries or objects, but lua tables are more flexible and can be used as arrays as well. See [here](https://www.lua.org/pil/2.5.html) for a quick intro to lua tables.
+
+## Rules and Actions
 
 A rule is a Lua function that returns either true or false. 
 
@@ -64,7 +68,7 @@ Rules determine whether a script should be run against a target.
 
 Scripts can have one or more (up to four) rules. Each rule is evaluated at different phases of the nmap run.
 
-`hostrule` and `portrule` take args that are lua [tables](https://www.lua.org/pil/2.5.html) which contain information on the target against which the script is executed.
+`hostrule` and `portrule` take args that are lua tables which contain information on the target against which the script is executed.
 
 ### prerule()
 
@@ -78,15 +82,49 @@ For each host that is up, nmap calls `hostrule`, passing it info about the host 
 
 ```lua
 hostrule = function(host)
-    if host.ip == "192.168.1.1" then
-        return true
-    end
-    return false
+    return host.ip == "192.168.1.1"
+end
+
+action = function(host, port)
+    return "hello world"
 end
 ```
 
 ### portrule(host, port)
 
+This function gets called for every port on every host that is up.
+
+??? example
+
+    Consider this script:
+
+    ```lua title="portrule.nse"
+    portrule = function(host, port)
+        return port.number == 8000
+    end 
+    action = function(host, port)
+        return "port 8000 is open"
+    end
+    ```     
+
+    Running it produces this output:
+
+    <!-- termynal -->
+    ```
+    $ nmap --script=./portrule.nse 127.0.0.1
+    Starting Nmap 7.94SVN ( https://nmap.org ) at 2025-04-19 08:59 EDT
+    Nmap scan report for localhost (127.0.0.1)
+    Host is up (0.000022s latency).
+    Not shown: 998 closed tcp ports (conn-refused)
+    PORT     STATE SERVICE
+    631/tcp  open  ipp
+    8000/tcp open  http-alt
+    |_portrule: Port 8000 is open on 127.0.0.1
+
+    Nmap done: 1 IP address (1 host up) scanned in 0.04 seconds
+    ```
+
+    Notice that although two ports were open, nmap only ran the action for port 8000.
 
 
 
