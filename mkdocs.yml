@@ -1,0 +1,28 @@
+site_name: Nmap Script Tutorial
+site_url: https://tristan-white.github.io/nmap-script-tutorial/
+repo_url: https://github.com/tristan-white/nmap-script-tutorial
+repo_name: tristan-white/nmap-script-tutorial
+theme:
+  name: material
+  palette: 
+    scheme: slate
+    primary: deep purple
+  features:
+    - navigation.tabs
+    - navigation.instant
+    - navigation.instant.progress
+    - content.code.copy
+plugins:
+  - termynal:
+  - search
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
